@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Тестовое задание Designa для UI/UX-дизайнера: промо-блок и калькулятор для финансового консалтинга.">
+  <title>Designa — тестовое задание UI/UX</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#brief">К заданию</a>
+
+  <header class="site-header" aria-label="Главная навигация">
+    <a class="brand" href="#top" aria-label="Designa — в начало">Designa<span class="brand-dot">.</span></a>
+    <nav class="nav" aria-label="Разделы страницы">
+      <a href="#brief">Задание</a>
+      <a href="#criteria">Критерии</a>
+      <a href="#submit">Сдача</a>
+    </nav>
+    <a class="header-cta" href="#submit">К сдаче <span aria-hidden="true">↘</span></a>
+  </header>
+
+  <main id="top">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <p class="eyebrow">Тестовое задание · UI/UX</p>
+        <h1 id="hero-title">Хороший дизайн<br>начинается<br>с задачи<span class="accent-dot">.</span></h1>
+        <p class="hero-lead">Спроектируй промо-блок и калькулятор для финансового консалтинга. Покажи, как сложное становится понятным.</p>
+        <div class="hero-actions">
+          <a class="button button-primary" href="#brief">Смотреть задание <span aria-hidden="true">↓</span></a>
+          <p class="hero-meta"><span>1 100 ₽</span><span>24 часа</span><span>Figma</span></p>
+        </div>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <div class="art-grid"></div>
+        <div class="art-orbit"></div>
+        <div class="art-cursor">↖</div>
+        <div class="art-copy art-copy-a">ИДЕИ<br>СТРУКТУРА<br>ПОЛЬЗА<br>РЕЗУЛЬТАТ</div>
+        <div class="art-copy art-copy-b">ПРОДУМАННЫЕ<br>РЕШЕНИЯ ДЛЯ<br>РЕАЛЬНЫХ ЗАДАЧ</div>
+        <div class="art-block"></div>
+      </div>
+      <div class="hero-marquee" aria-hidden="true">
+        <span>Типографика</span><i></i><span>Сетка</span><i></i><span>Смысл</span><i></i><span>Детали</span><i></i><span>Адаптивность</span>
+      </div>
+    </section>
+
+    <section class="section brief" id="brief" aria-labelledby="brief-title">
+      <div class="section-index">01 <span></span></div>
+      <div class="brief-copy reveal">
+        <p class="eyebrow">Задача</p>
+        <h2 id="brief-title">Покажи выгоду.<br>Не усложняй.</h2>
+        <p class="section-lead">Разработай промо-блок для главной страницы финансового консалтинга. За несколько секунд предприниматель должен понять, сколько он может сэкономить.</p>
+        <div class="brief-points" aria-label="Принципы решения">
+          <p><b>01</b> Понятный и честный расчёт</p>
+          <p><b>02</b> Строгая B2B-подача</p>
+          <p><b>03</b> Убедительный сценарий</p>
+        </div>
+      </div>
+
+      <div class="calculator reveal" aria-labelledby="calculator-title">
+        <div class="calc-topline">
+          <span id="calculator-title">Калькулятор экономии</span>
+          <span class="status"><i></i> быстрый расчёт</span>
+        </div>
+        <fieldset>
+          <legend>Размер бизнеса</legend>
+          <div class="segment" role="radiogroup" aria-label="Размер бизнеса">
+            <label class="segment-option is-active"><input type="radio" name="business" value="small" checked><span>Малый</span></label>
+            <label class="segment-option"><input type="radio" name="business" value="medium"><span>Средний</span></label>
+            <label class="segment-option"><input type="radio" name="business" value="large"><span>Крупный</span></label>
+          </div>
+        </fieldset>
+        <div class="calc-result" aria-live="polite">
+          <span>Возможная экономия</span>
+          <strong id="saving-value">320 000 ₽</strong>
+          <small id="saving-note">в год для малого бизнеса</small>
+        </div>
+        <a class="button button-lime" href="#submit">Получить финансовый план <span aria-hidden="true">→</span></a>
+      </div>
+    </section>
+
+    <section class="section deliverables" aria-labelledby="deliverables-title">
+      <div class="section-index coral">02 <span></span></div>
+      <div class="deliverables-head reveal">
+        <p class="eyebrow">Что нужно сделать</p>
+        <h2 id="deliverables-title">Один блок.<br>Два формата<span class="accent-dot">.</span></h2>
+        <p>Сохрани иерархию и смысл на двух экранах. Покажи, что интерфейс остаётся живым в каждом состоянии.</p>
+      </div>
+      <div class="deliverable-list">
+        <article class="deliverable reveal">
+          <span>01</span>
+          <div><h3>Desktop · 1440 px</h3><p>Промо-блок, калькулятор и целевая кнопка в основном формате.</p></div>
+          <div class="device laptop" aria-hidden="true"><i></i><b></b></div>
+        </article>
+        <article class="deliverable reveal">
+          <span>02</span>
+          <div><h3>Mobile · 375 px</h3><p>Вертикальная адаптация без потери ритма, иерархии и читаемости.</p></div>
+          <div class="device phone" aria-hidden="true"><i></i><b></b></div>
+        </article>
+        <article class="deliverable reveal">
+          <span>03</span>
+          <div><h3>Default / Hover / Active</h3><p>Состояния карточки и кнопки, которые ощущаются, а не просто подписаны.</p></div>
+          <div class="state-demo" aria-hidden="true"><i></i><i></i><i></i></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section criteria" id="criteria" aria-labelledby="criteria-title">
+      <div class="criteria-number" aria-hidden="true">04</div>
+      <div class="section-index">03 <span></span></div>
+      <div class="criteria-head reveal">
+        <p class="eyebrow">Что оцениваем</p>
+        <h2 id="criteria-title">Не декор.<br>Решения.</h2>
+      </div>
+      <div class="criteria-grid">
+        <article class="criterion reveal"><b>✓</b><h3>Логика и UI/UX</h3><p>Понятный сценарий, честные данные и ясный следующий шаг.</p></article>
+        <article class="criterion reveal"><b>✓</b><h3>Аккуратность</h3><p>Чистая композиция, Auto Layout и внимание к каждой детали.</p></article>
+        <article class="criterion reveal"><b>✓</b><h3>Адаптивность</h3><p>Переход между экранами без потери смысла и характера.</p></article>
+        <article class="criterion reveal"><b>✓</b><h3>Визуальный стиль</h3><p>Целостная B2B-подача, работа с цветом, ритмом и типографикой.</p></article>
+      </div>
+      <div class="criteria-statement reveal">Важны не эффекты,<br>а обоснованные решения.</div>
+    </section>
+
+    <section class="section terms" aria-labelledby="terms-title">
+      <div class="terms-heading reveal">
+        <p class="eyebrow">Условия</p>
+        <h2 id="terms-title">Всё важное —<br>здесь<span class="accent-dot">.</span></h2>
+      </div>
+      <dl class="terms-list">
+        <div class="reveal"><dt>Вознаграждение</dt><dd>1 100 ₽</dd><small>при выполнении критериев</small></div>
+        <div class="reveal"><dt>Срок</dt><dd>24 часа</dd><small>с момента получения</small></div>
+        <div class="reveal"><dt>Инструмент</dt><dd>Figma</dd><small>ссылка с доступом</small></div>
+      </dl>
+      <div class="timer-panel">
+        <div class="timer-copy"><span>Твой таймер для работы</span><small>Состояние сохраняется в этом браузере</small></div>
+        <div class="timer" role="timer" aria-live="off">
+          <div><strong id="hours">24</strong><span>часа</span></div><em>:</em>
+          <div><strong id="minutes">00</strong><span>минут</span></div><em>:</em>
+          <div><strong id="seconds">00</strong><span>секунд</span></div>
+        </div>
+        <button class="button button-coral" id="timer-start" type="button">Начать отсчёт <span aria-hidden="true">→</span></button>
+      </div>
+    </section>
+
+    <section class="section submit" id="submit" aria-labelledby="submit-title">
+      <div class="submit-head reveal">
+        <p class="eyebrow">Сдача работы</p>
+        <h2 id="submit-title">Финальный<br>штрих<span class="accent-dot">.</span></h2>
+      </div>
+      <div class="submission-layout">
+        <div class="checklist" id="checklist">
+          <label class="check-row"><input type="checkbox"><span class="check-box" aria-hidden="true"></span><span><b>Desktop-версия · 1440 px</b><small>Основной экран или ключевые экраны</small></span></label>
+          <label class="check-row"><input type="checkbox"><span class="check-box" aria-hidden="true"></span><span><b>Мобильная версия · 375 px</b><small>Адаптация основных экранов</small></span></label>
+          <label class="check-row"><input type="checkbox"><span class="check-box" aria-hidden="true"></span><span><b>Состояния интерфейса</b><small>Default, hover и active</small></span></label>
+          <label class="check-row"><input type="checkbox"><span class="check-box" aria-hidden="true"></span><span><b>Доступ к макету в Figma</b><small>Открыт для просмотра или копирования</small></span></label>
+          <label class="check-row"><input type="checkbox"><span class="check-box" aria-hidden="true"></span><span><b>Ссылка скопирована</b><small>На макет или презентацию</small></span></label>
+          <div class="progress-copy"><b>Готово <span id="done-count">0</span> из 5</b><span id="progress-percent">0%</span></div>
+          <div class="progress-track" role="progressbar" aria-label="Готовность к отправке" aria-valuemin="0" aria-valuemax="5" aria-valuenow="0"><i id="progress-bar"></i></div>
+        </div>
+        <div class="submit-card reveal">
+          <span class="submit-star" aria-hidden="true">✳</span>
+          <p>Передать работу<br>на проверку</p>
+          <a class="submit-link is-disabled" id="send-link" href="https://t.me/antirko" target="_blank" rel="noopener" aria-disabled="true">Отправить<br>в Telegram <span aria-hidden="true">→</span></a>
+          <small>Ответим в течение 2 рабочих дней.</small>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <a class="brand" href="#top">Designa<span class="brand-dot">.</span></a>
+    <p>Люди. Задачи. Хороший дизайн.</p>
+    <span>Студия цифрового дизайна · 2026</span>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
