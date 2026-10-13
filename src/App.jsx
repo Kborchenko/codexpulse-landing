@@ -2,14 +2,40 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   ArrowDownRight, ArrowRight, BarChart3, BriefcaseBusiness, Check,
   ChevronDown, Clock3, ExternalLink, FileText, Figma, Layers3, Monitor, Send,
-  Smartphone, Sparkles, TimerReset, WalletCards
+  Settings2, ShoppingCart, Smartphone, Sparkles, TimerReset, Users, WalletCards
 } from 'lucide-react'
 
 const businessData = {
-  small: { label: 'Малый', sub: 'до 50 сотрудников', value: 320000, percent: 24, bars: [72, 66, 62, 58, 52, 48, 42, 40, 39, 38, 36, 34] },
-  medium: { label: 'Средний', sub: '50–250 сотрудников', value: 640000, percent: 40, bars: [82, 79, 74, 65, 64, 58, 51, 49, 50, 47, 45, 42] },
-  large: { label: 'Крупный', sub: 'от 250 сотрудников', value: 1280000, percent: 48, bars: [90, 86, 83, 80, 72, 66, 61, 56, 53, 50, 47, 44] }
+  small: {
+    label: 'Малый', sub: 'до 50 сотрудников', value: 320000, percent: 24,
+    employees: 35, procurement: '36 млн ₽', operations: '24 млн ₽',
+    base: [12000,26000,41000,58000,76000,96000,117000,139000,162000,186000,211000,238000],
+    optimized: [22000,50000,82000,118000,158000,202000,250000,301000,356000,418000,486000,558000],
+    breakdown: [{label:'ФОТ',value:140000,share:44},{label:'Подрядчики',value:110000,share:34},{label:'Операционные',value:70000,share:22}]
+  },
+  medium: {
+    label: 'Средний', sub: '50–250 сотрудников', value: 640000, percent: 40,
+    employees: 150, procurement: '120 млн ₽', operations: '80 млн ₽',
+    base: [20000,38000,57000,79000,101000,124000,151000,180000,211000,245000,281000,320000],
+    optimized: [30000,72000,128000,174000,238000,318000,405000,510000,612000,718000,820000,960000],
+    breakdown: [{label:'ФОТ',value:280000,share:44},{label:'Подрядчики',value:220000,share:34},{label:'Операционные',value:140000,share:22}]
+  },
+  large: {
+    label: 'Крупный', sub: 'от 250 сотрудников', value: 1280000, percent: 48,
+    employees: 420, procurement: '310 млн ₽', operations: '190 млн ₽',
+    base: [40000,76000,114000,158000,202000,248000,302000,360000,422000,490000,562000,640000],
+    optimized: [60000,144000,256000,348000,476000,636000,810000,1020000,1224000,1436000,1640000,1920000],
+    breakdown: [{label:'ФОТ',value:560000,share:44},{label:'Подрядчики',value:440000,share:34},{label:'Операционные',value:280000,share:22}]
+  }
 }
+
+const expenseRows = [
+  { category: 'Закупки и материалы', current: 420, potential: -180, next: 240, change: '−42,9%', priority: 'Высокий' },
+  { category: 'IT и лицензии', current: 160, potential: -36, next: 124, change: '−22,5%', priority: 'Средний' },
+  { category: 'Административные расходы', current: 180, potential: -54, next: 126, change: '−30,0%', priority: 'Высокий' },
+  { category: 'Персонал и аутсорсинг', current: 150, potential: -40, next: 110, change: '−26,7%', priority: 'Средний' },
+  { category: 'Логистика и услуги', current: 90, potential: -18, next: 72, change: '−20,0%', priority: 'Низкий' }
+]
 
 const criteria = [
   { title: 'Сценарий и UX-логика', text: 'Последовательный путь от исходных данных к понятному результату.', checks: ['Ясная структура и навигация', 'Аргументированный пользовательский поток', 'Интерфейс решает задачу аудитории'], icon: Layers3 },
@@ -153,16 +179,45 @@ function App() {
             <div className="business-options" role="radiogroup" aria-label="Размер бизнеса">
               {Object.entries(businessData).map(([key,item])=><label key={key} className={business===key?'active':''}><input type="radio" name="business" checked={business===key} onChange={()=>setBusiness(key)}/><span><b>{item.label}</b><small>{item.sub}</small></span></label>)}
             </div>
-            <div className="calc-main">
-              <div><span>Возможная экономия в год</span><strong>{money(selected.value)} ₽</strong></div>
-              <div className="percent"><BarChart3 size={22}/><b>до {selected.percent}%</b><small>от текущих затрат</small></div>
+            <div className="forecast-head">
+              <div><span>Потенциальная экономия</span><strong>{money(selected.value)} ₽</strong><small>в год после внедрения рекомендаций</small></div>
+              <div className="percent"><BarChart3 size={22}/><b>до {selected.percent}%</b><small>от управляемых затрат</small></div>
             </div>
-            <div className="chart" aria-label="Диаграмма экономии">{selected.bars.map((v,i)=><i key={i} className={i>5?'active':''} style={{height:`${v}%`}} />)}</div>
+            <div className="forecast-layout">
+              <div className="assumptions-panel">
+                <h3>Исходные допущения</h3>
+                <Assumption icon={Users} label="Численность" value={`${selected.employees} чел.`} note="штат и регулярный аутсорсинг" />
+                <Assumption icon={ShoppingCart} label="Закупки и подрядчики" value={selected.procurement} note="годовой объём" />
+                <Assumption icon={Settings2} label="Операционные расходы" value={selected.operations} note="без ФОТ и CAPEX" />
+                <p>Расчёт носит ориентировочный характер и уточняется после диагностики процессов.</p>
+              </div>
+              <ForecastChart data={selected} />
+            </div>
+            <div className="savings-breakdown">
+              <div className="breakdown-title"><span>Структура экономии</span><small>вклад категорий в годовой эффект</small></div>
+              {selected.breakdown.map((item,index)=><div className="breakdown-item" key={item.label}>
+                <span><i>{String(index+1).padStart(2,'0')}</i>{item.label}</span>
+                <strong>{money(item.value)} ₽</strong>
+                <div><i style={{transform:`scaleX(${item.share/100})`}}/><small>{item.share}%</small></div>
+              </div>)}
+              <div className="breakdown-total"><span>Итого</span><strong>{money(selected.value)} ₽</strong></div>
+            </div>
             <a className="btn btn-blue" href="#submit">Получить финансовый план <FileText size={19}/></a>
           </Reveal>
-          <Reveal className="card compact-card"><FileText/><div><span className="card-label">Входные данные</span><h3>Минимум полей для релевантного расчёта</h3></div></Reveal>
-          <Reveal className="card compact-card"><BarChart3/><div><span className="card-label">Результат сценария</span><h3>Персональный ориентир и следующий шаг</h3></div></Reveal>
+          <Reveal className="brief-evidence">
+            <span className="card-label">Что должно быть доказано интерфейсом</span>
+            {[['01','Источник результата','Понятно, какие категории расходов формируют эффект.'],['02','Логика расчёта','Пользователь видит допущения и различает сценарии.'],['03','Следующий шаг','Расчёт естественно ведёт к получению финансового плана.']].map(row=><div key={row[0]}><b>{row[0]}</b><strong>{row[1]}</strong><p>{row[2]}</p></div>)}
+          </Reveal>
         </div>
+        <Reveal className="impact-analysis">
+          <div className="impact-heading"><span className="card-label">Финансовая модель · пример наполнения</span><h3>Структура эффекта</h3><p>Покажите не только итоговую сумму, но и путь от текущего бюджета к целевой модели расходов.</p></div>
+          <div className="impact-grid">
+            <WaterfallChart />
+            <div className="benchmark"><span>Бенчмарк отрасли</span><p>Доля расходов в выручке</p>{[['35%','Пиковое значение'],['28%','Выше среднего'],['22%','Среднее по отрасли'],['16%','После оптимизации'],['10%','Лучшие в отрасли']].map((item,index)=><div className={index===3?'active':''} key={item[0]}><i style={{width:`${Number(item[0].replace('%',''))/35*100}%`}}/><b>{item[0]}</b><small>{item[1]}</small></div>)}</div>
+            <aside className="impact-summary"><span>Экономия за 12 месяцев</span><strong>−32,8%</strong><b>или 328 млн ₽</b><p>при сохранении текущего объёма бизнеса</p><blockquote>Наибольший контролируемый эффект даёт консолидация закупок — без изменения качества услуги.</blockquote></aside>
+          </div>
+          <ExpenseTable />
+        </Reveal>
       </section>
 
       <section className="section shell">
@@ -255,6 +310,61 @@ function App() {
     </main>
     <footer className="footer shell"><a className="logo" href="#top">Designa</a><span>Product design exercise</span><p>Финансовый продукт, объяснённый через интерфейс.</p><a href="#top">Наверх ↑</a></footer>
   </>
+}
+
+function Assumption({ icon: Icon, label, value, note }) { return <div className="assumption"><Icon/><span><b>{label}</b><small>{note}</small></span><strong>{value}</strong></div> }
+
+function ForecastChart({ data }) {
+  const [hovered, setHovered] = useState(5)
+  const months = ['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек']
+  const width = 900, height = 360, left = 74, right = 26, top = 38, bottom = 54
+  const maxValue = Math.ceil(Math.max(...data.optimized) / 200000) * 200000
+  const x = index => left + index * ((width - left - right) / 11)
+  const y = value => top + (height - top - bottom) * (1 - value / maxValue)
+  const line = values => values.map((value,index)=>`${index?'L':'M'} ${x(index)} ${y(value)}`).join(' ')
+  const area = values => `${line(values)} L ${x(11)} ${height-bottom} L ${x(0)} ${height-bottom} Z`
+  const ticks = [0,.25,.5,.75,1]
+  const currentDiff = data.optimized[hovered] - data.base[hovered]
+  return <div className="forecast-chart">
+    <div className="chart-toolbar"><div><span>Накопительный эффект, ₽</span><small>прогноз на 12 месяцев</small></div><div className="chart-legend"><span className="base">Базовый сценарий</span><span className="optimized">После оптимизации</span></div></div>
+    <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-labelledby="forecast-title forecast-desc">
+      <title id="forecast-title">Сравнение базового сценария и результата после оптимизации</title>
+      <desc id="forecast-desc">Помесячный накопительный эффект. Разница к декабрю составляет {money(data.value)} рублей.</desc>
+      <defs><linearGradient id="lime-area" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#c7ff4a" stopOpacity=".24"/><stop offset="1" stopColor="#c7ff4a" stopOpacity="0"/></linearGradient><linearGradient id="blue-area" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#5267ff" stopOpacity=".2"/><stop offset="1" stopColor="#5267ff" stopOpacity="0"/></linearGradient></defs>
+      {ticks.map(tick=>{const value=maxValue*tick;return <g key={tick}><line className="gridline" x1={left} x2={width-right} y1={y(value)} y2={y(value)}/><text className="axis-y" x={left-14} y={y(value)+4} textAnchor="end">{value===0?'0':`${Math.round(value/1000)}k`}</text></g>})}
+      {months.map((month,index)=><text key={month} className="axis-x" x={x(index)} y={height-20} textAnchor="middle">{month}</text>)}
+      <path className="chart-area optimized" d={area(data.optimized)}/><path className="chart-area base" d={area(data.base)}/>
+      <path className="chart-line base" d={line(data.base)}/><path className="chart-line optimized" d={line(data.optimized)}/>
+      <line className="hover-line" x1={x(hovered)} x2={x(hovered)} y1={top} y2={height-bottom}/>
+      {data.base.map((value,index)=><circle key={`b${index}`} className="point base" cx={x(index)} cy={y(value)} r={index===hovered?6:4} tabIndex="0" onMouseEnter={()=>setHovered(index)} onFocus={()=>setHovered(index)} aria-label={`${months[index]}, базовый сценарий ${money(value)} рублей`}/>) }
+      {data.optimized.map((value,index)=><circle key={`o${index}`} className="point optimized" cx={x(index)} cy={y(value)} r={index===hovered?7:4.5} tabIndex="0" onMouseEnter={()=>setHovered(index)} onFocus={()=>setHovered(index)} aria-label={`${months[index]}, после оптимизации ${money(value)} рублей`}/>) }
+      <g className="chart-tooltip" transform={`translate(${Math.min(x(hovered)+18,width-240)} ${Math.max(48,y(data.optimized[hovered])-96)})`}><rect width="208" height="84" rx="12"/><text x="14" y="24" className="tooltip-month">{months[hovered]}</text><text x="14" y="48" className="tooltip-label">После оптимизации</text><text x="194" y="48" textAnchor="end" className="tooltip-value optimized">{money(data.optimized[hovered])} ₽</text><text x="14" y="69" className="tooltip-label">Дополнительный эффект</text><text x="194" y="69" textAnchor="end" className="tooltip-value">+{money(currentDiff)} ₽</text></g>
+    </svg>
+    <table className="sr-only"><caption>Помесячные данные прогноза</caption><thead><tr><th>Месяц</th><th>Базовый сценарий</th><th>После оптимизации</th></tr></thead><tbody>{months.map((month,index)=><tr key={month}><td>{month}</td><td>{data.base[index]}</td><td>{data.optimized[index]}</td></tr>)}</tbody></table>
+  </div>
+}
+
+function WaterfallChart(){
+  const width=780,height=340,left=52,bottom=58,top=24,max=1200
+  const y=value=>top+(height-top-bottom)*(1-value/max)
+  const bars=[
+    {label:'Текущие расходы',start:0,end:1000,value:'1 000',kind:'total'},
+    {label:'Оптимизация закупок',start:1000,end:820,value:'−180',kind:'delta'},
+    {label:'Автоматизация',start:820,end:750,value:'−70',kind:'delta'},
+    {label:'Новая модель',start:750,end:672,value:'−78',kind:'delta'},
+    {label:'После оптимизации',start:0,end:672,value:'672',kind:'total'}
+  ]
+  const barWidth=106,gap=38
+  const bx=index=>left+26+index*(barWidth+gap)
+  return <div className="waterfall"><div className="analysis-title"><span>Декомпозиция, млн ₽</span><small>12 месяцев</small></div><svg viewBox={`0 0 ${width} ${height}`} role="img" aria-labelledby="waterfall-title waterfall-desc"><title id="waterfall-title">Структура снижения расходов</title><desc id="waterfall-desc">Расходы снижаются с одной тысячи до 672 миллионов рублей за счёт закупок, автоматизации и новой операционной модели.</desc>
+    {[0,200,400,600,800,1000,1200].map(value=><g key={value}><line className="gridline" x1={left} x2={width-16} y1={y(value)} y2={y(value)}/><text className="axis-y" x={left-10} y={y(value)+4} textAnchor="end">{value}</text></g>)}
+    {bars.map((bar,index)=>{const topY=y(Math.max(bar.start,bar.end)),bottomY=y(Math.min(bar.start,bar.end));return <g key={bar.label}><rect className={`waterfall-bar ${bar.kind}`} x={bx(index)} y={topY} width={barWidth} height={Math.max(3,bottomY-topY)} rx="2"/><text className="waterfall-value" x={bx(index)+barWidth/2} y={topY-10} textAnchor="middle">{bar.value}</text><text className="waterfall-label" x={bx(index)+barWidth/2} y={height-34} textAnchor="middle">{bar.label.split(' ').map((word,i)=><tspan key={word+i} x={bx(index)+barWidth/2} dy={i?14:0}>{word}</tspan>)}</text>{index<bars.length-1&&index<4?<line className="connector" x1={bx(index)+barWidth} x2={bx(index+1)} y1={y(bar.end)} y2={y(bar.end)}/>:null}</g>})}
+  </svg></div>
+}
+
+function ExpenseTable(){
+  const totals=expenseRows.reduce((acc,row)=>({current:acc.current+row.current,potential:acc.potential+row.potential,next:acc.next+row.next}),{current:0,potential:0,next:0})
+  return <div className="expense-table-wrap"><div className="expense-table-head"><h4>Детализация по категориям расходов</h4><span>все суммы указаны в млн ₽, за 12 месяцев</span></div><div className="expense-scroll"><table className="expense-table"><thead><tr><th>Категория</th><th>Текущий бюджет</th><th>Потенциал</th><th>Новый бюджет</th><th>Изменение</th><th>Приоритет</th></tr></thead><tbody>{expenseRows.map(row=><tr key={row.category}><td>{row.category}</td><td>{row.current}</td><td>{row.potential}</td><td>{row.next}</td><td className="positive">{row.change}</td><td><span className={`priority ${row.priority.toLowerCase()}`}>{row.priority}</span></td></tr>)}<tr className="total"><td>Итого</td><td>{totals.current}</td><td>{totals.potential}</td><td>{totals.next}</td><td className="positive">−32,8%</td><td>—</td></tr></tbody></table></div></div>
 }
 
 function MiniMetric({ icon: Icon, value, label }) { return <div className="mini-metric"><Icon/><span><b>{value}</b><small>{label}</small></span></div> }
