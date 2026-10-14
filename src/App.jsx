@@ -37,11 +37,11 @@ function App() {
           <a href="#services" onClick={() => setMenuOpen(false)}>Что делаем</a>
           <a href="#process" onClick={() => setMenuOpen(false)}>Как работаем</a>
           <a href="#principles" onClick={() => setMenuOpen(false)}>Подход</a>
-          <a className="nav-cta mobile-only" href="https://t.me/antirko" target="_blank" rel="noreferrer">Обсудить задачу</a>
+          <a className="nav-cta mobile-only" href="#contact" onClick={() => setMenuOpen(false)}>Обсудить задачу</a>
         </nav>
         <div className="nav-side">
           <span className="availability"><i />Берём новые проекты</span>
-          <a className="nav-cta" href="https://t.me/antirko" target="_blank" rel="noreferrer">Обсудить задачу <ArrowUpRight size={16} /></a>
+          <a className="nav-cta" href="#contact">Обсудить задачу <ArrowDownRight size={16} /></a>
           <button className="menu-button" type="button" aria-label={menuOpen ? 'Закрыть меню' : 'Открыть меню'} aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X /> : <Menu />}</button>
         </div>
       </header>
@@ -53,7 +53,7 @@ function App() {
             <h1>Продукты,<br />которые доходят<br />до релиза<span>.</span></h1>
             <p className="hero-lead">CodexPulse проектирует и собирает лендинги, интерфейсы и AI-инструменты — от первой гипотезы до работающего продукта.</p>
             <div className="hero-actions">
-              <a className="button button-primary" href="https://t.me/antirko" target="_blank" rel="noreferrer">Обсудить идею <ArrowUpRight size={19} /></a>
+              <a className="button button-primary" href="#contact">Обсудить идею <ArrowDownRight size={19} /></a>
               <a className="button button-ghost" href="#process">Посмотреть процесс <ArrowDownRight size={19} /></a>
             </div>
           </div>
@@ -130,14 +130,14 @@ function App() {
           <p className="eyebrow contact-eyebrow">Создадим <span /> рабочее, а не просто красивое</p>
           <h2>Есть задача?<br />Соберём первый<br />рабочий релиз.</h2>
           <p className="contact-copy">Напишите пару слов о задаче. Разберём контекст, предложим следующий шаг и честно скажем, чем можем помочь.</p>
-          <div className="contact-actions"><a className="button button-light" href="https://t.me/antirko" target="_blank" rel="noreferrer">Обсудить проект <ArrowUpRight size={20} /></a><a className="text-link" href="https://t.me/antirko" target="_blank" rel="noreferrer">Написать в Telegram</a></div>
+          <div className="contact-actions"><span className="contact-status"><i />Контакты обновляются</span></div>
         </section>
       </main>
 
       <footer>
         <div className="footer-brand"><a className="brand" href="#top"><PulseMark /><span>Codex<span>Pulse</span></span></a><p>Цифровые продукты, которые<br />доходят до релиза.</p></div>
         <div className="footer-nav"><a href="#services">Что делаем</a><a href="#process">Процесс</a><a href="#principles">Подход</a></div>
-        <div className="footer-contact"><span className="availability"><i />Берём новые проекты</span><a href="https://t.me/antirko" target="_blank" rel="noreferrer">Telegram <ArrowUpRight size={16} /></a></div>
+        <div className="footer-contact"><span className="availability"><i />Берём новые проекты</span><span className="footer-status">Контакты обновляются</span></div>
         <div className="footer-bottom"><span>© {new Date().getFullYear()} CodexPulse</span><span>Vladivostok · Remote</span></div>
       </footer>
     </div>
