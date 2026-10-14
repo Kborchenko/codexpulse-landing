@@ -239,20 +239,14 @@ function App() {
       </section>
 
       <section className="section shell references-section" id="references">
-        <SectionHeading index="03" eyebrow="Визуальные ориентиры" title={<>Референсы с<br/>понятной ролью.</>} text="Не копируйте стилистику буквально. Используйте примеры как ориентиры для иерархии, аргументации и качества продуктовых состояний." />
-        <div className="references-grid">
-          {references.map((reference, index) => <Reveal key={reference.name} className={`reference-card ${reference.tone}`}>
-            <a href={reference.url} target="_blank" rel="noreferrer" aria-label={`Открыть референс ${reference.name}`}>
-              <div className="reference-top"><span>0{index + 1}</span><small>{reference.label}</small><ExternalLink /></div>
-              <ReferencePreview tone={reference.tone} name={reference.name} />
-              <div className="reference-copy">
-                <p>{reference.name}</p>
-                <h3>{reference.title}</h3>
-                <span>{reference.text}</span>
-                <div>{reference.cues.map(cue => <i key={cue}>{cue}</i>)}</div>
-              </div>
-            </a>
-          </Reveal>)}
+        <Reveal className="references-heading">
+          <div><span>03</span><p>Визуальные ориентиры</p></div>
+          <h2>Референсы —<br/>не декор, а метод.</h2>
+          <p>Разбираем не внешний стиль, а конкретные продуктовые приёмы: как объяснить ценность, доказать эффект и удержать сложный интерфейс понятным.</p>
+          <small>Четыре продукта.<br/>Четыре разных урока.</small>
+        </Reveal>
+        <div className="references-list">
+          {references.map((reference, index) => <ReferenceStory key={reference.name} reference={reference} index={index} />)}
         </div>
         <p className="reference-note">Все ссылки ведут на официальные сайты компаний. Референсы предназначены для анализа принципов, а не для прямого копирования интерфейса.</p>
       </section>
@@ -266,7 +260,7 @@ function App() {
               <button onClick={()=>setOpenCriterion(open?-1:index)} aria-expanded={open}>
                 <span className="criterion-index">0{index+1}</span><Icon/><b>{item.title}</b><p>{item.text}</p><ChevronDown className="chevron"/>
               </button>
-              <div className="criterion-panel" inert={!open?"":undefined} aria-hidden={!open}>
+              <div className="criterion-panel" inert={!open ? true : undefined} aria-hidden={!open}>
                 <div className="criterion-checks">{item.checks.map(t=><span key={t}><Check/>{t}</span>)}</div>
                 <InterfacePreview />
               </div>
@@ -321,18 +315,34 @@ function ForecastChart({ data }) {
   const maxValue = Math.ceil(Math.max(...data.optimized) / 200000) * 200000
   const x = index => left + index * ((width - left - right) / 11)
   const y = value => top + (height - top - bottom) * (1 - value / maxValue)
-  const line = values => values.map((value,index)=>`${index?'L':'M'} ${x(index)} ${y(value)}`).join(' ')
+  const points = values => values.map((value,index)=>({x:x(index),y:y(value)}))
+  const smoothPath = pts => {
+    if (!pts.length) return ''
+    return pts.slice(1).reduce((path,point,index)=>{
+      const p0=pts[index-1]||pts[index],p1=pts[index],p2=point,p3=pts[index+2]||p2
+      const cp1x=p1.x+(p2.x-p0.x)/6,cp1y=p1.y+(p2.y-p0.y)/6
+      const cp2x=p2.x-(p3.x-p1.x)/6,cp2y=p2.y-(p3.y-p1.y)/6
+      return `${path} C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${p2.x} ${p2.y}`
+    },`M ${pts[0].x} ${pts[0].y}`)
+  }
+  const line = values => smoothPath(points(values))
   const area = values => `${line(values)} L ${x(11)} ${height-bottom} L ${x(0)} ${height-bottom} Z`
+  const upper=points(data.optimized.map(value=>Math.min(maxValue,value*1.08)))
+  const lower=points(data.optimized.map(value=>value*.92)).reverse()
+  const confidenceBand=`${smoothPath(upper)} L ${lower[0].x} ${lower[0].y} ${smoothPath(lower).replace(/^M [^C]+/,'')} Z`
   const ticks = [0,.25,.5,.75,1]
+  const milestones=[{index:2,label:'Старт реализации'},{index:5,label:'Первые результаты'},{index:8,label:'Масштабирование'}]
   const currentDiff = data.optimized[hovered] - data.base[hovered]
   return <div className="forecast-chart">
     <div className="chart-toolbar"><div><span>Накопительный эффект, ₽</span><small>прогноз на 12 месяцев</small></div><div className="chart-legend"><span className="base">Базовый сценарий</span><span className="optimized">После оптимизации</span></div></div>
     <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-labelledby="forecast-title forecast-desc">
       <title id="forecast-title">Сравнение базового сценария и результата после оптимизации</title>
       <desc id="forecast-desc">Помесячный накопительный эффект. Разница к декабрю составляет {money(data.value)} рублей.</desc>
-      <defs><linearGradient id="lime-area" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#c7ff4a" stopOpacity=".24"/><stop offset="1" stopColor="#c7ff4a" stopOpacity="0"/></linearGradient><linearGradient id="blue-area" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#5267ff" stopOpacity=".2"/><stop offset="1" stopColor="#5267ff" stopOpacity="0"/></linearGradient></defs>
+      <defs><linearGradient id="lime-area" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#c7ff4a" stopOpacity=".18"/><stop offset="1" stopColor="#c7ff4a" stopOpacity="0"/></linearGradient><linearGradient id="blue-area" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#5267ff" stopOpacity=".12"/><stop offset="1" stopColor="#5267ff" stopOpacity="0"/></linearGradient></defs>
       {ticks.map(tick=>{const value=maxValue*tick;return <g key={tick}><line className="gridline" x1={left} x2={width-right} y1={y(value)} y2={y(value)}/><text className="axis-y" x={left-14} y={y(value)+4} textAnchor="end">{value===0?'0':`${Math.round(value/1000)}k`}</text></g>})}
       {months.map((month,index)=><text key={month} className="axis-x" x={x(index)} y={height-20} textAnchor="middle">{month}</text>)}
+      {milestones.map(item=><g className="milestone" key={item.label}><line x1={x(item.index)} x2={x(item.index)} y1={top-2} y2={height-bottom}/><circle cx={x(item.index)} cy={top-10} r="3"/><text x={x(item.index)+9} y={top-7}>{item.label}</text></g>)}
+      <path className="confidence-band" d={confidenceBand}/>
       <path className="chart-area optimized" d={area(data.optimized)}/><path className="chart-area base" d={area(data.base)}/>
       <path className="chart-line base" d={line(data.base)}/><path className="chart-line optimized" d={line(data.optimized)}/>
       <line className="hover-line" x1={x(hovered)} x2={x(hovered)} y1={top} y2={height-bottom}/>
@@ -341,6 +351,41 @@ function ForecastChart({ data }) {
       <g className="chart-tooltip" transform={`translate(${Math.min(x(hovered)+18,width-240)} ${Math.max(48,y(data.optimized[hovered])-96)})`}><rect width="208" height="84" rx="12"/><text x="14" y="24" className="tooltip-month">{months[hovered]}</text><text x="14" y="48" className="tooltip-label">После оптимизации</text><text x="194" y="48" textAnchor="end" className="tooltip-value optimized">{money(data.optimized[hovered])} ₽</text><text x="14" y="69" className="tooltip-label">Дополнительный эффект</text><text x="194" y="69" textAnchor="end" className="tooltip-value">+{money(currentDiff)} ₽</text></g>
     </svg>
     <table className="sr-only"><caption>Помесячные данные прогноза</caption><thead><tr><th>Месяц</th><th>Базовый сценарий</th><th>После оптимизации</th></tr></thead><tbody>{months.map((month,index)=><tr key={month}><td>{month}</td><td>{data.base[index]}</td><td>{data.optimized[index]}</td></tr>)}</tbody></table>
+  </div>
+}
+
+function ReferenceStory({ reference, index }) {
+  return <Reveal className={`reference-story reference-story-${index+1}`}>
+    <div className="reference-meta">
+      <div className="reference-index"><b>0{index+1}</b><span>{reference.label}</span></div>
+      <h3>{reference.name}</h3>
+      <p>{reference.text}</p>
+      <div className="reference-takeaway"><small>Что берём в работу</small><strong>{reference.title}</strong><div>{reference.cues.map(cue=><span key={cue}>{cue}</span>)}</div></div>
+      <a href={reference.url} target="_blank" rel="noreferrer" aria-label={`Открыть официальный сайт ${reference.name}`}>Открыть сайт <ExternalLink/></a>
+    </div>
+    <ReferenceProductVisual name={reference.name}/>
+  </Reveal>
+}
+
+function ReferenceProductVisual({ name }) {
+  if(name==='Stripe') return <div className="product-reference stripe-reference" aria-label="Схематичный разбор продуктовой подачи Stripe">
+    <div className="product-nav"><b>stripe</b><span>Products</span><span>Solutions</span><span>Developers</span><i>Sign in →</i></div>
+    <div className="stripe-copy"><small>Financial infrastructure</small><strong>Build and grow<br/>your <em>global business</em></strong><p>Clear value proposition paired with a believable product moment.</p><button>Start now</button></div>
+    <div className="stripe-ui"><div><small>Gross volume</small><b>$3,528,198</b><svg viewBox="0 0 230 62" aria-hidden="true"><path d="M2 52 C42 48 52 35 88 38 S138 16 170 22 S204 9 228 5"/></svg></div><div className="stripe-stat"><span>Net volume</span><b>$4,180,332</b><i>+4.2%</i></div></div>
+  </div>
+  if(name==='Ramp') return <div className="product-reference ramp-reference" aria-label="Схематичный разбор финансовой аргументации Ramp">
+    <div className="ramp-total"><span>Total savings</span><strong>$1,280,428</strong><b>↑ 38% <small>vs. previous period</small></b></div>
+    <div className="ramp-bars">{[32,45,42,52,61,73,86,68].map((v,i)=><i key={i} style={{height:`${v}%`}}><span>{['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug'][i]}</span></i>)}</div>
+    <div className="ramp-proof"><div><strong>62%</strong><span>SaaS spend</span></div><div><strong>3.1×</strong><span>month to close</span></div></div>
+  </div>
+  if(name==='Wise Business') return <div className="product-reference wise-reference" aria-label="Схематичный разбор ясной подачи Wise Business">
+    <div><b>WISE</b><strong>A simpler way<br/>to do business<br/><em>across borders</em></strong><button>Open a business account →</button></div>
+    <div className="wise-orbit"><i/><span className="currency usd"><b>USD</b><small>$ 12,428.00</small></span><span className="currency eur"><b>EUR</b><small>€ 10,230.50</small></span><span className="currency gbp"><b>GBP</b><small>£ 8,420.00</small></span></div>
+  </div>
+  return <div className="product-reference linear-reference" aria-label="Схематичный разбор продуктовой подачи Linear">
+    <aside><b>◉ Linear</b>{['Inbox','My issues','Roadmap','Projects','Cycles'].map(item=><span key={item}>{item}</span>)}</aside>
+    <div className="linear-list"><small>IN PROGRESS · 3</small>{['Design new onboarding flow','Improve search performance','Refactor billing infrastructure'].map((item,i)=><div key={item}><i/><span><b>{item}</b><small>ENG-{402+i*28} · In Progress</small></span></div>)}</div>
+    <div className="linear-detail"><small>ENG-402</small><strong>Design new onboarding flow</strong><p>Simplify the onboarding experience and reduce time to first value.</p><div><span>Overview</span><span>Comments</span><span>Files</span></div></div>
   </div>
 }
 
