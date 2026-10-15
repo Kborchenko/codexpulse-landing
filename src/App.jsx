@@ -9,10 +9,17 @@ const services = [
 ]
 
 const steps = [
-  { id: '01', title: 'Разбор', time: '1–2 дня', text: 'Цели, аудитория, ограничения' },
-  { id: '02', title: 'Прототип', time: '2–4 дня', text: 'Структура, сценарии, направление' },
-  { id: '03', title: 'Сборка', time: '3–10 дней', text: 'Интерфейс, код, интеграции' },
-  { id: '04', title: 'Релиз', time: '1–2 дня', text: 'Проверка, оптимизация, запуск' },
+  { id: '01', key: 'Discovery', title: 'Разбор', time: '1–2 дня', text: 'Цели, аудитория, ограничения', result: 'Карта целей, рисков и приоритетов', detail: 'Фиксируем, для кого делаем продукт, какое действие считаем целевым и что не входит в первую версию.' },
+  { id: '02', key: 'Prototype', title: 'Прототип', time: '2–4 дня', text: 'Структура, сценарии, направление', result: 'Кликабельный UX-прототип', detail: 'Собираем информационную архитектуру, ключевые экраны и состояния. Проверяем логику до дорогого визуального слоя.' },
+  { id: '03', key: 'Build', title: 'Сборка', time: '3–10 дней', text: 'Интерфейс, код, интеграции', result: 'Адаптивная рабочая сборка', detail: 'Переводим дизайн-систему в компоненты, собираем адаптив, анимации и интеграции. Каждый этап можно открыть и проверить.' },
+  { id: '04', key: 'Release', title: 'Релиз', time: '1–2 дня', text: 'Проверка, оптимизация, запуск', result: 'Продакшн, аналитика и backlog', detail: 'Проходим design QA, проверяем адаптив, скорость и ключевые сценарии. После запуска фиксируем следующую итерацию.' },
+]
+
+const designDetails = [
+  { id: '01', title: 'UX-архитектура', text: 'Сценарии, карта экранов, приоритеты контента и состояния интерфейса до перехода к визуалу.', tag: 'User flow · Wireframes' },
+  { id: '02', title: 'Визуальный язык', text: 'Типографика, цвет, сетка, ритм и микродетали, собранные в цельную систему, а не набор карточек.', tag: 'Art direction · UI kit' },
+  { id: '03', title: 'Адаптив и состояния', text: 'Проектируем mobile-first, фокус, hover, loading, empty и error-состояния, чтобы макет не ломался в реальной жизни.', tag: '375–1440 px · States' },
+  { id: '04', title: 'Design QA', text: 'Сверяем сборку с задумкой, проверяем контраст, кликабельные зоны, переполнения и поведение на разных экранах.', tag: 'A11y · Polish · Handoff' },
 ]
 
 function PulseMark() {
@@ -22,6 +29,7 @@ function PulseMark() {
 function App() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [activeService, setActiveService] = useState(0)
+  const [activeStep, setActiveStep] = useState(2)
 
   useEffect(() => {
     const close = () => setMenuOpen(false)
@@ -59,22 +67,26 @@ function App() {
           </div>
           <div className="hero-system" aria-label="Схема пути от идеи до релиза">
             <div className="system-topline"><span>release pipeline</span><span>CP / 01</span></div>
-            <div className="pulse-graph">
+            <div className="pulse-graph" aria-label="Интерактивный план релиза">
               <svg viewBox="0 0 760 260" preserveAspectRatio="none" aria-hidden="true">
                 <defs><filter id="glow"><feGaussianBlur stdDeviation="5" result="blur" /><feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge></filter></defs>
-                <path className="pulse-path-muted" d="M0 218 C105 218 118 153 217 153 S330 103 410 112 S522 154 585 101 S684 71 760 52" />
-                <path className="pulse-path" d="M0 218 C105 218 118 153 217 153 S330 103 410 112 S522 154 585 101 S684 71 760 52" pathLength="1" />
+                <path className="pulse-path-muted" d="M0 218 C105 218 145 190 217 170 C300 147 335 138 410 122 C493 104 515 96 585 82 C665 66 700 58 760 52" />
+                <path className="pulse-path" d="M0 218 C105 218 145 190 217 170 C300 147 335 138 410 122 C493 104 515 96 585 82 C665 66 700 58 760 52" pathLength="1" />
               </svg>
-              {steps.map((step, index) => <div className={`pulse-node node-${index + 1}`} key={step.id}><span className="node-dot" /><small>{step.id}</small><strong>{step.title}</strong><em>{step.time}</em></div>)}
+              {steps.map((step, index) => <button type="button" className={`pulse-node node-${index + 1}${activeStep === index ? ' is-active' : ''}`} key={step.id} onClick={() => setActiveStep(index)} aria-pressed={activeStep === index}><span className="node-dot" /><small>{step.id}</small><strong>{step.key}</strong><em>{step.time}</em></button>)}
             </div>
-            <div className="build-log">
-              <div><span className="log-state done"><Check size={14} /> discovery</span><span>структура согласована</span></div>
-              <div><span className="log-state done"><Check size={14} /> prototype</span><span>ключевой сценарий готов</span></div>
-              <div><span className="log-state active"><i /> build</span><span>интерфейс в сборке</span></div>
-              <div><span className="log-state"><i /> release</span><span>следующий этап</span></div>
+            <div className="build-log" role="tablist" aria-label="Этапы работы">
+              {steps.map((step, index) => <button type="button" role="tab" aria-selected={activeStep === index} className={activeStep === index ? 'is-active' : ''} onClick={() => setActiveStep(index)} key={step.id}><span className={`log-state ${index < activeStep ? 'done' : ''} ${index === activeStep ? 'active' : ''}`}>{index < activeStep ? <Check size={14} /> : <i />}{step.key}</span><span>{step.result}</span></button>)}
             </div>
+            <div className="stage-readout" aria-live="polite"><span>{steps[activeStep].id} / {steps[activeStep].key}</span><p>{steps[activeStep].detail}</p></div>
           </div>
           <div className="hero-foot"><span>01</span><i /><span>От идеи к работающему продукту</span></div>
+        </section>
+
+        <section className="design-scope light-section" id="design-scope">
+          <div className="section-kicker"><span>Дизайн в процессе</span><i /><span>Не макет, а система решений</span></div>
+          <div className="design-scope-head"><h2>Дизайн, который<br />выдерживает реальность.</h2><p>Мы не отдаём набор красивых экранов. Проектируем логику, язык и состояния, а затем проверяем их в живой сборке.</p></div>
+          <div className="design-detail-grid">{designDetails.map((item) => <article key={item.id}><span>{item.id}</span><h3>{item.title}</h3><p>{item.text}</p><small>{item.tag}</small></article>)}</div>
         </section>
 
         <section className="services light-section" id="services">
@@ -102,7 +114,8 @@ function App() {
         <section className="process" id="process">
           <div className="section-kicker section-kicker-dark"><span>Как работаем</span><i /><span>Понятные этапы вместо чёрного ящика</span></div>
           <div className="process-head"><h2>Ритм работы виден<br />с первого дня.</h2><p>Делим проект на короткие этапы. На каждом есть конкретный результат, который можно посмотреть, проверить и скорректировать.</p></div>
-          <div className="timeline"><div className="timeline-line"><span /></div>{steps.map((step, index) => <article className="timeline-step" key={step.id}><span className="step-index">{step.id}</span><i className={`step-dot dot-${index + 1}`} /><h3>{step.title}</h3><strong>{step.time}</strong><p>{step.text}</p></article>)}</div>
+          <div className="timeline" role="tablist" aria-label="Подробные этапы"><div className="timeline-line"><span /></div>{steps.map((step, index) => <button type="button" role="tab" aria-selected={activeStep === index} className={`timeline-step${activeStep === index ? ' is-active' : ''}`} onClick={() => setActiveStep(index)} key={step.id}><span className="step-index">{step.id}</span><i className={`step-dot dot-${index + 1}`} /><h3>{step.title}</h3><strong>{step.time}</strong><p>{step.text}</p></button>)}</div>
+          <div className="timeline-detail" role="tabpanel"><span>Результат этапа</span><h3>{steps[activeStep].result}</h3><p>{steps[activeStep].detail}</p><b>{steps[activeStep].time}</b></div>
           <div className="proof-grid">
             <div className="metric-block"><p>Типичный объём</p><strong>7–14</strong><span>дней до первого релиза небольшого веб-продукта*</span></div>
             <div className="metric-block"><p>Ориентир качества</p><strong>90<span>+</span></strong><span>целевая оценка Lighthouse по ключевым категориям*</span></div>
